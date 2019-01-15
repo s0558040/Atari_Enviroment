@@ -7,8 +7,10 @@ Es handelt sich hierbei um einen Reinforcment Learning Algorythmus mit einem neu
 Bevor Pong zum erstmal ausgeführt werden kann, müssen einige Pakete installiert werden (dies gilt für Ubuntu):
 + sudo apt install python-pip
 + pip install numpy
++ pip install matplotlib
 + pip install gym
 + pip instal gym[atari]
++ Installation von Anaconda
 
 Nach der Installation kann das Programm wie folgt gestartet werden:
 + chmod u+x pg-pong-ac.py

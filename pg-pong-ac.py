@@ -4,7 +4,9 @@ import pickle as pickle
 import gym
 import atari_games
 import copy
-#print (open('pg-pong-ac.py').read())
+#import matplotlib.pyplot as plt
+import csv
+
 # hyperparameters
 H = 200 # number of hidden layer neurons
 batch_size = 300 #
@@ -16,7 +18,7 @@ td_step = 30 # initial td step
 gamma_power = [gamma**i for i in range(td_step+1)]
 shrink_step = True
 rmsprop = True
-resume = True # resume from previous checkpoint?
+resume = False # resume from previous checkpoint?
 render = True
 
 
@@ -70,6 +72,10 @@ def backward(eph,epx,epd,modelType):
   dW1 = np.dot(dh.T, epx)
   return {'W1_'+modelType:dW1, 'W2_'+modelType:dW2, 'b1_'+modelType:db1, 'b2_'+modelType:db2}
 
+
+csvfile = open('learning_curve.csv', 'wb')
+filewriter = csv.writer(csvfile, delimiter=' ', quotechar='|', quoting=csv.QUOTE_MINIMAL)
+
 #env = gym.make("Pong-v0")
 env = gym.make('htw_pong-v0')
 observation = env.reset()
@@ -78,6 +84,8 @@ xs,h_ps,h_vs,dlogps,vs,tvs,dvs = [],[],[],[],[],[],[]
 running_reward = None
 reward_sum = 0
 round_number = 0
+episode = 0
+reward_summary = []
 while True:
   if render: env.render()
 
@@ -104,6 +112,7 @@ while True:
   # step the environment and get new measurements
   observation, reward, done, info = env.step(action)
   reward_sum += reward
+  reward_summary.append(reward)
 
 
   if reward != 0: 
@@ -151,11 +160,16 @@ while True:
           model_target[k] = mom_rate * model_target[k] + (1-mom_rate) * model[k]
 
     print (('round %d game finished, reward: %f' % (round_number, reward)) + ('' if reward == -1 else ' !!!!!!!!'))
-    if round_number % 3000 == 0: pickle.dump((model,model_target), open('save.ac', 'wb'))
+
+    if round_number % 3000 == 0:
+      pickle.dump((model,model_target), open('save.ac', 'wb'))
+
   # boring book-keeping
   if done:
     running_reward = reward_sum if running_reward is None else running_reward * 0.99 + reward_sum * 0.01
     print ('resetting env. episode reward total was %f. running mean: %f' % (reward_sum, running_reward))
+    episode += 1
+    filewriter.writerow([running_reward] + [episode])
     reward_sum = 0
     observation = env.reset() # reset env
     prev_x = None
