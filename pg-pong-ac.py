@@ -169,7 +169,7 @@ while True:
     running_reward = reward_sum if running_reward is None else running_reward * 0.99 + reward_sum * 0.01
     print ('resetting env. episode reward total was %f. running mean: %f' % (reward_sum, running_reward))
     episode += 1
-    filewriter.writerow([running_reward] + [episode])
+    filewriter.writerow([reward_sum] + [episode])
     reward_sum = 0
     observation = env.reset() # reset env
     prev_x = None
