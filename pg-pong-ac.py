@@ -76,8 +76,8 @@ def backward(eph,epx,epd,modelType):
 csvfile = open('learning_curve.csv', 'wb')
 filewriter = csv.writer(csvfile, delimiter=' ', quotechar='|', quoting=csv.QUOTE_MINIMAL)
 
-#env = gym.make("Pong-v0")
-env = gym.make('htw_pong-v0')
+env = gym.make("Pong-v0")
+#env = gym.make('htw_pong-v0')
 observation = env.reset()
 prev_x = None # used in computing the difference frame
 xs,h_ps,h_vs,dlogps,vs,tvs,dvs = [],[],[],[],[],[],[]
