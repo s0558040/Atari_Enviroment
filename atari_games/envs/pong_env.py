@@ -65,12 +65,17 @@ class PongEnv(gym.Env, utils.EzPickle):
         return [seed1, seed2]
 
     def _get_image(self):
+	"""Loads current state from the drawn window."""
         return self.ale.getScreenRGB2()
 
     def _get_ram(self):
+	"""Gets the current state of the game from RAM."""
         return to_ram(self.ale)
 
     def step(self, a):
+	"""Performs the input action, gets a new frame.
+	Returns new observation (frame), reward for the performed action,
+	status if the episode is over and if the game is still running."""
         reward = 0.0
         action = self._action_set[a]
 
@@ -79,17 +84,19 @@ class PongEnv(gym.Env, utils.EzPickle):
         else:
             num_steps = self.np_random.randint(self.frameskip[0], self.frameskip[1])
         for _ in range(num_steps):
-            #reward += self.ale.act(action)
-            reward += self.manipulation_reward(action)
+            reward += self._manipulate_reward(action)
         ob = self._get_obs()
 
         return ob, reward, self.ale.game_over(), {"ale.lives": self.ale.lives()}
 
     @property
     def _n_actions(self):
+	"""Returns the number of possible input actions."""
         return len(self._action_set)
 
     def _get_obs(self):
+	"""Gets the current frame from RAM or drawn window.
+	It returns the current frame."""
         if self._obs_type == 'ram':
             return self._get_ram()
         elif self._obs_type == 'image':
@@ -97,10 +104,14 @@ class PongEnv(gym.Env, utils.EzPickle):
         return img
 
     def reset(self):
+	"""Rests the game to its starting state.
+	It returns the current frame."""
         self.ale.reset_game()
         return self._get_obs()
 
     def render(self, mode='human'):
+	"""In human mode, it renders the current frame in a window.
+	In rgb_array mode, it returns an array of rgb values."""
         img = self._get_image()
         if mode == 'rgb_array':
             return img
@@ -111,7 +122,8 @@ class PongEnv(gym.Env, utils.EzPickle):
             self.viewer.imshow(img)
         return self.viewer.isopen
 
-    def manipulation_reward(self, action):
+    def _manipulate_reward(self, action):
+	"""Perfoms the input action and manipulates the reward"""
         reward = self.ale.act(action)
         if reward == 1:
             reward *= 10

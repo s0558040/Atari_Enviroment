@@ -9,7 +9,7 @@ Bevor Pong zum erstmal ausgeführt werden kann, müssen einige Pakete installier
 + pip install numpy
 + pip install gym
 + pip instal gym[atari]
-+ Installation von Anaconda3
++ Installation von Anaconda3 [Anaconda3-Download-Link](https://www.anaconda.com/distribution/)
 
 Nach der Installation kann das Programm wie folgt gestartet werden:
 + chmod u+x pg-pong-ac.py
